@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
-import { faker } from '@faker-js/faker';
 import './App.css'
+import generatePhrase from './lib/phraseGenerator';
 
 function App() {
-  const [phrase, setPhrase] = useState(faker.company.catchPhrase().toLowerCase())
+  const [phrase, setPhrase] = useState(generatePhrase())
   const [postContent, setPostContent] = useState('');
   const [validInput, setValidInput] = useState('');
   const [finalInput, setFinalInput] = useState('');
-  // const [backgroundColor, setBackgroundColor] = useState('lightgreen');
 
   useEffect(() => {
     if(compareString(phrase, postContent)){
@@ -15,7 +14,7 @@ function App() {
     }
     if(phrase == postContent){
       setFinalInput(finalInput + validInput)
-      setPhrase(faker.company.catchPhrase().toLowerCase())
+      setPhrase(generatePhrase())
       setPostContent('')
     }
   }, [finalInput, validInput, phrase, postContent]);
@@ -39,12 +38,12 @@ function App() {
       {phrase}
       </p>
 
-      <textarea style={{backgroundColor: validatePostContent(), color: 'black'}} cols={70} rows={20} value={postContent} 
+      <textarea data-testid="input" style={{backgroundColor: validatePostContent(), color: 'black'}} cols={70} rows={20} value={postContent} 
       onChange={e => setPostContent(e.target.value)} ></textarea>
       <div>
         <ul>
-          <li>Char count: {(finalInput + validInput).length} / {(finalInput + phrase).length}</li>
-          <li>Word count: {(finalInput + validInput).split(' ').length} / {(finalInput +phrase).split(" ").length}</li>
+          <li data-testid='user-char-count'>Char count: {(finalInput + validInput).length} / {(finalInput + phrase).length}</li>
+          <li data-testid='user-word-count'>Word count: {(finalInput + validInput).split(' ').length} / {(finalInput +phrase).split(" ").length}</li>
           <li>Time Left: 10s</li>
         </ul>
         
