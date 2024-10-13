@@ -9,14 +9,35 @@ function App() {
   const [validInput, setValidInput] = useState("");
   const [finalInput, setFinalInput] = useState("");
   const [timer, setTimer] = useState(60);
+  const [inputDisabled, setInputDisabled] = useState(true);
 
   const compareString = (original: string, input: string): boolean => {
     return original.startsWith(input);
   };
 
+  const resetTest = (): void => {
+    setTimer(5);
+    setPostContent("");
+    setValidInput("");
+    setFinalInput("");
+  };
+  const startTest = (): void => {
+    resetTest();
+    setPhrase(generatePhrase());
+    setInputDisabled(false);
+    document.getElementById("text-input")?.focus();
+    countdown(5, setTimer);
+  };
+
   useEffect(() => {
-    countdown(60, setTimer);
-  }, []);
+    if (timer == 0 && (finalInput + validInput).trim().length != 0) {
+      const cpm = (finalInput + validInput).length;
+      const wpm = wordCount(finalInput + validInput);
+      resetTest();
+      setInputDisabled(true);
+      alert(`Test finished: CPM: ${cpm}, WPM: ${wpm}`);
+    }
+  }, [timer]);
 
   useEffect(() => {
     if (compareString(phrase, postContent)) {
@@ -46,8 +67,10 @@ function App() {
 
   return (
     <>
+      <button onClick={startTest}>Start Typing Test</button>
       <p>{phrase}</p>
       <TextInput
+        disabled={inputDisabled}
         postContent={postContent}
         setPostContent={setPostContent}
         isValid={isValidPostContent()}

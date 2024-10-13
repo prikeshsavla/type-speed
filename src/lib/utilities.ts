@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 
 const generatePhrase = (): string => {
-  return faker.company.catchPhrase().toLowerCase();
+  return faker.word.words(10).toLowerCase();
 };
 
 function countdown(seconds: number, onChange: Function): void {
