@@ -1,11 +1,11 @@
 import { faker } from "@faker-js/faker";
 
-const generatePhrase = (): string => {
+export const generatePhrase = function (): string {
   return faker.word.words(10).toLowerCase();
 };
 
-function countdown(seconds: number, onChange: Function): void {
-  let intervalId = window.setInterval(function () {}, Number.MAX_SAFE_INTEGER);
+export const countdown = function (seconds: number, onChange: Function): void {
+  let intervalId = window.setInterval(function () { }, Number.MAX_SAFE_INTEGER);
   for (let i = 1; i <= intervalId; i++) {
     window.clearInterval(i);
   }
@@ -20,4 +20,4 @@ function countdown(seconds: number, onChange: Function): void {
   }, 1000);
 }
 
-export default generatePhrase;
+

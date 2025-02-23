@@ -1,40 +1,49 @@
 import { useCallback, useEffect, useState } from "react";
-import generatePhrase from "./lib/utilities";
-import countdown from "./lib/countdown";
+import {generatePhrase, countdown} from "./lib/utilities";
+// import countdown from "./lib/countdown";
 import TextInput from "./components/TextInput";
+import CompareText from "./components/CompareText";
 
 function App() {
-  const [phrase, setPhrase] = useState(generatePhrase());
+  const TEST_TIME = 10;
+  const DEBUG = true;
+  const [phrase, setPhrase] = useState("");
   const [postContent, setPostContent] = useState("");
   const [validInput, setValidInput] = useState("");
   const [finalInput, setFinalInput] = useState("");
   const [timer, setTimer] = useState(60);
   const [inputDisabled, setInputDisabled] = useState(true);
+  const [autoFocus, setAutoFocus] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
 
   const compareString = (original: string, input: string): boolean => {
     return original.startsWith(input);
   };
 
   const resetTest = (): void => {
-    setTimer(5);
+    setTimer(TEST_TIME);
     setPostContent("");
     setValidInput("");
     setFinalInput("");
   };
   const startTest = (): void => {
     resetTest();
-    setPhrase(generatePhrase());
+    if(phrase == ""){
+      setPhrase(generatePhrase());
+    }
     setInputDisabled(false);
-    document.getElementById("text-input")?.focus();
-    countdown(5, setTimer);
+    setAutoFocus(true);
+    countdown(TEST_TIME, setTimer);
   };
 
   useEffect(() => {
     if (timer == 0 && (finalInput + validInput).trim().length != 0) {
       const cpm = (finalInput + validInput).length;
       const wpm = wordCount(finalInput + validInput);
-      resetTest();
+      setPhrase("");
+      setPostContent("");
       setInputDisabled(true);
+      setAutoFocus(false);
       alert(`Test finished: CPM: ${cpm}, WPM: ${wpm}`);
     }
   }, [timer]);
@@ -56,6 +65,12 @@ function App() {
     return compareString(phrase, postContent);
   }, [phrase, postContent]);
 
+  useEffect(() => {
+    if(!compareString(phrase, postContent)){
+      console.log("Error");
+    }
+  }, [phrase, postContent]);
+
   const wordCount = (str: string): number => {
     const words = str.match(/\S+/g);
     if (words && words.length !== 0) {
@@ -66,15 +81,20 @@ function App() {
   };
 
   return (
+  
     <>
       <button onClick={startTest}>Start Typing Test</button>
-      <p>{phrase}</p>
+      <article>
+        <CompareText source={phrase} target={postContent} />
+      </article>
       <TextInput
-        disabled={inputDisabled}
+        disabled={inputDisabled} 
         postContent={postContent}
         setPostContent={setPostContent}
         isValid={isValidPostContent()}
+        autoFocus={autoFocus}
       />
+     
       <div>
         <ul>
           <li data-testid="user-char-count">
@@ -87,9 +107,16 @@ function App() {
           </li>
           <li>Time Left : {timer}s</li>
         </ul>
-
-        <p>ValidInput: {validInput}</p>
-        <p>Final Input: {finalInput}</p>
+        
+        {DEBUG &&
+          <article>
+            DEBUG: 
+            <p>ValidInput: {validInput}</p>
+            <p>Final Input: {finalInput}</p>
+            <p>Errors: {errors}</p>
+          </article>
+        }
+        
       </div>
     </>
   );
